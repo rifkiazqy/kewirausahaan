@@ -1,16 +1,19 @@
 'use client';
 
 import { AuthPage } from '@/lib/types';
+import { useState } from 'react';
 
 interface AuthFormProps {
   authPage: AuthPage;
   setAuthPage: (p: AuthPage) => void;
-  loginForm: { username: string; password: string };
-  setLoginForm: (v: { username: string; password: string }) => void;
-  registerForm: { name: string; username: string; password: string };
-  setRegisterForm: (v: { name: string; username: string; password: string }) => void;
+  loginForm: { email: string; password: string };
+  setLoginForm: (v: { email: string; password: string }) => void;
+  registerForm: { name: string; username: string; email: string; password: string };
+  setRegisterForm: (v: { name: string; username: string; email: string; password: string }) => void;
   onLogin: (e: React.FormEvent) => void;
   onRegister: (e: React.FormEvent) => void;
+  isLoading?: boolean;
+  error?: string;
 }
 
 export default function AuthForm({
@@ -22,6 +25,8 @@ export default function AuthForm({
   setRegisterForm,
   onLogin,
   onRegister,
+  isLoading = false,
+  error = '',
 }: AuthFormProps) {
   const inputCls =
     'w-full px-4 py-3 bg-gray-700/60 border border-gray-600 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-all';
@@ -53,12 +58,18 @@ export default function AuthForm({
         {/* Login Form */}
         {authPage === 'login' ? (
           <form onSubmit={onLogin} className="space-y-5">
+            {error && (
+              <div className="p-3 bg-red-500/20 border border-red-500/50 rounded-lg text-red-300 text-sm">
+                {error}
+              </div>
+            )}
             <div>
-              <label className={labelCls}>Username</label>
+              <label className={labelCls}>Email</label>
               <input
-                type="text" value={loginForm.username} required
-                onChange={(e) => setLoginForm({ ...loginForm, username: e.target.value })}
-                className={inputCls} placeholder="Masukkan username Anda"
+                type="email" value={loginForm.email} required
+                onChange={(e) => setLoginForm({ ...loginForm, email: e.target.value })}
+                className={inputCls} placeholder="Masukkan email Anda"
+                disabled={isLoading}
               />
             </div>
             <div>
@@ -67,9 +78,12 @@ export default function AuthForm({
                 type="password" value={loginForm.password} required
                 onChange={(e) => setLoginForm({ ...loginForm, password: e.target.value })}
                 className={inputCls} placeholder="Masukkan password Anda"
+                disabled={isLoading}
               />
             </div>
-            <button type="submit" className={submitCls}>Masuk</button>
+            <button type="submit" className={submitCls} disabled={isLoading}>
+              {isLoading ? 'Sedang masuk...' : 'Masuk'}
+            </button>
             <p className="text-center text-gray-400 text-sm">
               Belum punya akun?{' '}
               <button type="button" onClick={() => setAuthPage('register')} className="text-indigo-400 font-bold hover:text-indigo-300 transition-colors">
@@ -80,12 +94,18 @@ export default function AuthForm({
         ) : (
           /* Register Form */
           <form onSubmit={onRegister} className="space-y-5">
+            {error && (
+              <div className="p-3 bg-red-500/20 border border-red-500/50 rounded-lg text-red-300 text-sm">
+                {error}
+              </div>
+            )}
             <div>
               <label className={labelCls}>Nama Lengkap</label>
               <input
                 type="text" value={registerForm.name} required
                 onChange={(e) => setRegisterForm({ ...registerForm, name: e.target.value })}
                 className={inputCls} placeholder="Nama lengkap Anda"
+                disabled={isLoading}
               />
             </div>
             <div>
@@ -94,6 +114,16 @@ export default function AuthForm({
                 type="text" value={registerForm.username} required
                 onChange={(e) => setRegisterForm({ ...registerForm, username: e.target.value })}
                 className={inputCls} placeholder="Pilih username"
+                disabled={isLoading}
+              />
+            </div>
+            <div>
+              <label className={labelCls}>Email</label>
+              <input
+                type="email" value={registerForm.email} required
+                onChange={(e) => setRegisterForm({ ...registerForm, email: e.target.value })}
+                className={inputCls} placeholder="Email Anda"
+                disabled={isLoading}
               />
             </div>
             <div>
@@ -102,9 +132,12 @@ export default function AuthForm({
                 type="password" value={registerForm.password} required
                 onChange={(e) => setRegisterForm({ ...registerForm, password: e.target.value })}
                 className={inputCls} placeholder="Buat password"
+                disabled={isLoading}
               />
             </div>
-            <button type="submit" className={submitCls}>Daftar</button>
+            <button type="submit" className={submitCls} disabled={isLoading}>
+              {isLoading ? 'Sedang mendaftar...' : 'Daftar'}
+            </button>
             <p className="text-center text-gray-400 text-sm">
               Sudah punya akun?{' '}
               <button type="button" onClick={() => setAuthPage('login')} className="text-indigo-400 font-bold hover:text-indigo-300 transition-colors">
